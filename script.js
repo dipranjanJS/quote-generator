@@ -5,16 +5,15 @@ const twitterBtn = document.getElementById('twitter');
 const newQuoteBtn = document.getElementById('new-quote');
 const loader = document.getElementById('ldsroller');
 
-//Show loading
-function loading() {
+// Loading Spinner Shown
+function showLoadingSpinner() {
     loader.hidden = false;
     loader.style.display = 'inline-block'
     quoteContainer.hidden = true;
 }
 
-// Hide loading
-
-function complete() {
+// Remove Loading Spinner
+function removeLoadingSpinner() {
     if(!loader.hidden) {
         quoteContainer.hidden = false;
         loader.hidden = true;
@@ -24,27 +23,27 @@ function complete() {
 
 // GET Quote from API
 async function getQuote() {
-    loading()
+    showLoadingSpinner();
+    // We need to use a PROXY URL to make our API call in order to avoid CORS issue
     const proxyUrl = 'http://cors-anywhere.herokuapp.com/';
     const apiUrl = 'http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json';
     try {
         const response = await fetch(proxyUrl + apiUrl);
         const data = await response.json();
-        // If Author is blank add authos as Unknown
+        // Check if author field is blank and replace it with 'Unknown
         if(data.quoteAuthor === '') {
             authorText.innerText = 'Unknown';
         } else {
             authorText.innerText =  data.quoteAuthor;
         }
-        // Reduce fontsize for long quotes
+        // Dynamically reduce fontsize for long quotes
         if(data.quoteText.length > 120) {
             quoteText.classList.add('long-quote');
         } else {
             quoteText.classList.remove('long-quote');
         }
         quoteText.innerText = data.quoteText;
-        // Stop loader and show the quote
-        complete();
+        removeLoadingSpinner();
     } catch(error) {
         getQuote();
     }
