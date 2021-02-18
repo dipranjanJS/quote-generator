@@ -12,7 +12,7 @@ function showLoadingSpinner() {
     quoteContainer.hidden = true;
 }
 
-// Remove Loading Spinner
+// // Remove Loading Spinner
 function removeLoadingSpinner() {
     if(!loader.hidden) {
         quoteContainer.hidden = false;
@@ -23,29 +23,27 @@ function removeLoadingSpinner() {
 
 // GET Quote from API
 async function getQuote() {
-    showLoadingSpinner();
-    // We need to use a PROXY URL to make our API call in order to avoid CORS issue
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const apiUrl = 'http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json';
+    showLoadingSpinner()
+    const apiUrl = "https://goquotes-api.herokuapp.com/api/v1/random?count=1"
     try {
-        const response = await fetch(proxyUrl + apiUrl);
+        const response = await fetch(apiUrl);
         const data = await response.json();
+        console.log(data.quotes[0])
         // Check if author field is blank and replace it with 'Unknown
-        if(data.quoteAuthor === '') {
+        if(data.quotes[0].author === '') {
             authorText.innerText = 'Unknown';
         } else {
-            authorText.innerText =  data.quoteAuthor;
+            authorText.innerText =  data.quotes[0].author;
         }
-        // Dynamically reduce fontsize for long quotes
-        if(data.quoteText.length > 120) {
+        // // Dynamically reduce fontsize for long quotes
+        if(data.quotes[0].text.length > 120) {
             quoteText.classList.add('long-quote');
         } else {
             quoteText.classList.remove('long-quote');
         }
-        quoteText.innerText = data.quoteText;
+        quoteText.innerText = data.quotes[0].text;
         removeLoadingSpinner();
     } catch(error) {
-        getQuote();
     }
 }
 
